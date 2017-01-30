@@ -51,8 +51,8 @@ public class ADIS16448_IMU extends GyroBase implements Gyro, PIDSource, LiveWind
   //private static final int kRegLOT_ID2 = 0x54;
   //private static final int kRegLOT_ID1 = 0x52;
   //private static final int kRegSERIAL_NUM = 0x58;
-  //private static final int kRegZGYRO_OFF = 0x1E;
-  //private static final int kRegYGYRO_OFF = 0x1C;
+  private static final int kRegZGYRO_OFF = 0x1E;
+  private static final int kRegYGYRO_OFF = 0x1C;
   private static final int kRegXGYRO_OFF = 0x1A;
 
   public enum AHRSAlgorithm { kComplementary, kMadgwick }
@@ -333,6 +333,32 @@ public class ADIS16448_IMU extends GyroBase implements Gyro, PIDSource, LiveWind
       m_gyro_offset_y = m_accum_gyro_y / m_accum_count;
       m_gyro_offset_z = m_accum_gyro_z / m_accum_count;
     }
+  }
+
+  /**
+   * Uses GLOB_CMD[0] to place xGYRO_OUT values
+   * into xGYRO_OFF automatically after ~80 seconds
+   * of sampling.
+   */
+  public void calibrateRegisters() {
+    System.out.printf("IMU CALIBRATION: Initial register values: XGYRO_OFF=%d, YGYRO_OFF=%d, ZGYRO_OFF=%d%n",
+        readRegister(kRegXGYRO_OFF), readRegister(kRegYGYRO_OFF), readRegister(kRegZGYRO_OFF));
+    System.out.println("IMU CALIBRATION: Writing new precision");
+    writeRegister(kRegSENS_AVG, readRegister(kRegSENS_AVG) & 0xF9FF);
+    System.out.println("IMU CALIBRATION: Writing sample rate");
+    writeRegister(kRegSMPL_PRD, readRegister(kRegSMPL_PRD) & 0xF0FF);
+    System.out.println("IMU CALIBRATION: Sampling. Do not move IMU for 80 seconds.");
+    Timer.delay(80);
+
+    System.out.println("IMU CALIBRATION: Sample done. Writing to registers.");
+    writeRegister(kGLOB_CMD, 1);
+    System.out.println("IMU CALIBRATION: Done.");
+    System.out.printf("IMU CALIBRATION: New register values: XGYRO_OFF=%d, YGYRO_OFF=%d, ZGYRO_OFF=%d%n",
+        readRegister(kRegXGYRO_OFF), readRegister(kRegYGYRO_OFF), readRegister(kRegZGYRO_OFF));
+
+    // Restore initial settings.
+    writeRegister(kRegSMPL_PRD, 0x0201);
+    writeRegister(kRegSENS_AVG, 0x0400);
   }
 
   private int readRegister(int reg) {
