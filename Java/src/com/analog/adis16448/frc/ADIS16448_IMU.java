@@ -348,10 +348,11 @@ public class ADIS16448_IMU extends GyroBase implements Gyro, PIDSource, LiveWind
     System.out.println("IMU CALIBRATION: Writing sample rate");
     writeRegister(kRegSMPL_PRD, readRegister(kRegSMPL_PRD) & 0xF0FF);
     System.out.println("IMU CALIBRATION: Sampling. Do not move IMU for 80 seconds.");
-    Timer.delay(80);
+    Timer.delay(80.5);
 
     System.out.println("IMU CALIBRATION: Sample done. Writing to registers.");
     writeRegister(kGLOB_CMD, 1);
+    Timer.delay(5);
     System.out.println("IMU CALIBRATION: Done.");
     System.out.printf("IMU CALIBRATION: New register values: XGYRO_OFF=%d, YGYRO_OFF=%d, ZGYRO_OFF=%d%n",
         readRegister(kRegXGYRO_OFF), readRegister(kRegYGYRO_OFF), readRegister(kRegZGYRO_OFF));
