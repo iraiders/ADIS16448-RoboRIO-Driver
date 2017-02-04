@@ -362,6 +362,11 @@ public class ADIS16448_IMU extends GyroBase implements Gyro, PIDSource, LiveWind
     writeRegister(kRegSENS_AVG, 0x0400);
   }
 
+  public void resetCalibrationRegisters() {
+    System.out.println("Clearing calibration registers");
+    writeRegister(kGLOB_CMD, 2);
+  }
+
   private int readRegister(int reg) {
     ByteBuffer buf = ByteBuffer.allocateDirect(2);
     buf.order(ByteOrder.BIG_ENDIAN);
