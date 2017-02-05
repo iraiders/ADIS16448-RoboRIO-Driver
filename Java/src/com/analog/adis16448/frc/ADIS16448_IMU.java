@@ -43,17 +43,17 @@ public class ADIS16448_IMU extends GyroBase implements Gyro, PIDSource, LiveWind
   private static final double kDegCPerLSB = 0.07386;
   private static final double kDegCOffset = 31;
 
-  private static final int kGLOB_CMD = 0x3E;
-  private static final int kRegSMPL_PRD = 0x36;
-  private static final int kRegSENS_AVG = 0x38;
-  private static final int kRegMSC_CTRL = 0x34;
-  private static final int kRegPROD_ID = 0x56;
-  //private static final int kRegLOT_ID2 = 0x54;
-  //private static final int kRegLOT_ID1 = 0x52;
-  //private static final int kRegSERIAL_NUM = 0x58;
-  private static final int kRegZGYRO_OFF = 0x1E;
-  private static final int kRegYGYRO_OFF = 0x1C;
-  private static final int kRegXGYRO_OFF = 0x1A;
+  public static final int kGLOB_CMD = 0x3E;
+  public static final int kRegSMPL_PRD = 0x36;
+  public static final int kRegSENS_AVG = 0x38;
+  public static final int kRegMSC_CTRL = 0x34;
+  public static final int kRegPROD_ID = 0x56;
+  //public static final int kRegLOT_ID2 = 0x54;
+  //public static final int kRegLOT_ID1 = 0x52;
+  //public static final int kRegSERIAL_NUM = 0x58;
+  public static final int kRegZGYRO_OFF = 0x1E;
+  public static final int kRegYGYRO_OFF = 0x1C;
+  public static final int kRegXGYRO_OFF = 0x1A;
 
   public enum AHRSAlgorithm { kComplementary, kMadgwick }
   public enum Axis { kX, kY, kZ }
@@ -367,7 +367,7 @@ public class ADIS16448_IMU extends GyroBase implements Gyro, PIDSource, LiveWind
     writeRegister(kGLOB_CMD, 2);
   }
 
-  private int readRegister(int reg) {
+  public int readRegister(int reg) {
     ByteBuffer buf = ByteBuffer.allocateDirect(2);
     buf.order(ByteOrder.BIG_ENDIAN);
     buf.put(0, (byte) (reg & 0x7f));
